@@ -1,0 +1,285 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
+  "name": "uci",
+  "rules": {
+    "source_file": {
+      "type": "REPEAT",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "package_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "config_section"
+          }
+        ]
+      }
+    },
+    "comment": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "#"
+          },
+          {
+            "type": "PATTERN",
+            "value": "[^\\n]*"
+          }
+        ]
+      }
+    },
+    "package_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "package_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier_or_string"
+        }
+      ]
+    },
+    "config_section": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "config_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier_or_string"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "identifier_or_string"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "option_statement"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "list_statement"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "option_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "option_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier_or_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "value"
+        }
+      ]
+    },
+    "list_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "list_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier_or_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "value"
+        }
+      ]
+    },
+    "identifier_or_string": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string"
+        }
+      ]
+    },
+    "value": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "unquoted_value"
+        }
+      ]
+    },
+    "package_keyword": {
+      "type": "STRING",
+      "value": "package"
+    },
+    "config_keyword": {
+      "type": "STRING",
+      "value": "config"
+    },
+    "option_keyword": {
+      "type": "STRING",
+      "value": "option"
+    },
+    "list_keyword": {
+      "type": "STRING",
+      "value": "list"
+    },
+    "identifier": {
+      "type": "PATTERN",
+      "value": "[a-z0-9_]+"
+    },
+    "unquoted_value": {
+      "type": "PATTERN",
+      "value": "[^#\\s'\"]+"
+    },
+    "string": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "double_quoted_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "single_quoted_string"
+        }
+      ]
+    },
+    "double_quoted_string": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "\""
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "PATTERN",
+                  "value": "[^\"\\\\\\n]"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\."
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\\\n"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\n"
+                }
+              ]
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "\""
+          }
+        ]
+      }
+    },
+    "single_quoted_string": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "'"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "PATTERN",
+                  "value": "[^'\\\\\\n]"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\."
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\\\\\n"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\n"
+                }
+              ]
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "'"
+          }
+        ]
+      }
+    }
+  },
+  "extras": [
+    {
+      "type": "PATTERN",
+      "value": "[ \\t\\r\\n]+"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "comment"
+    }
+  ],
+  "conflicts": [],
+  "precedences": [],
+  "externals": [],
+  "inline": [],
+  "supertypes": [],
+  "reserved": {}
+}
